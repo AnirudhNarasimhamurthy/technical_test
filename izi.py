@@ -251,4 +251,17 @@ while menu_choice !=10:
 		except MySQLdb.Error as e:
 			print e
 			logging.warn("select statement failed to execute.please check your query")
-			sys.exit()								
+			sys.exit()
+			
+	elif menu_choice==8:
+		print '=========================================='	
+		print 'Could be displayed if employed on a long term basis :)'
+		print '=========================================='	
+		showMainMenu()
+	
+	elif menu_choice==9:
+		print '=========================================='	
+		print 'Could be displayed if employed on a long term basis :)'
+		print '=========================================='	
+		showMainMenu()	
+											
