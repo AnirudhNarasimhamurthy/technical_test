@@ -236,15 +236,16 @@ while menu_choice !=10:
 		except MySQLdb.Error as e:
 			print e
 			logging.warn("select statement failed to execute.please check your query")
-			sys.exit()		
-	elif menu_choice==7:   #Display the animal feed table details
+			sys.exit()	
+				
+	elif menu_choice==7:   #Display times per day animals are fed on avg
 		
 		try:
-			select_sql="select * from animal_feed"
+			select_sql="select temp2.animal_name,avg(temp2.dailyfeed_cnt) as avgfeed_count from ( select animal_name, count(feeding_date) as dailyfeed_cnt from animal_feed group by animal_name, feeding_date ) as temp2 group by temp2.animal_name "
 			rows_affected=cur.execute(select_sql)
 			if rows_affected > 0:
 				for row in cur.fetchall():
-					print row[0], row[1],row[2],row[3],row[4],row[5]
+					print row[0], row[1]
 					print '=========================================='	
 			showMainMenu()
 		except MySQLdb.Error as e:
