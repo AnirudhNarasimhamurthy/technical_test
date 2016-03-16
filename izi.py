@@ -170,7 +170,7 @@ while menu_choice !=10:
 		while inventory_menu_choice !=5:
 			if inventory_menu_choice==1:
 				quantity=getInput()
-				fid=1
+				fid=1 #Setting the food id so that I can know which record needs to be updated
 			elif inventory_menu_choice==2:	
 				quantity=getInput()
 				fid=2
@@ -221,4 +221,33 @@ while menu_choice !=10:
 		except MySQLdb.Error as e:
 			print e
 			logging.warn("select statement failed to execute.please check your query")
+			sys.exit()	
+			
+	elif menu_choice==6:   #Display how much each individual animal was fed per day on avg
+		
+		try:
+			select_sql="select temp.animal_name, avg(temp.daily_qty) from ( select animal_name,sum(qty) as daily_qty from animal_feed group by animal_name, feeding_date)as temp group by temp.animal_name;"
+			rows_affected=cur.execute(select_sql)
+			if rows_affected > 0:
+				for row in cur.fetchall():
+					print row[0], row[1]
+					print '=========================================='	
+			showMainMenu()
+		except MySQLdb.Error as e:
+			print e
+			logging.warn("select statement failed to execute.please check your query")
 			sys.exit()		
+	elif menu_choice==7:   #Display the animal feed table details
+		
+		try:
+			select_sql="select * from animal_feed"
+			rows_affected=cur.execute(select_sql)
+			if rows_affected > 0:
+				for row in cur.fetchall():
+					print row[0], row[1],row[2],row[3],row[4],row[5]
+					print '=========================================='	
+			showMainMenu()
+		except MySQLdb.Error as e:
+			print e
+			logging.warn("select statement failed to execute.please check your query")
+			sys.exit()								
