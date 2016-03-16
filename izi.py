@@ -48,7 +48,7 @@ showMainMenu()
 
 try:
 	db = MySQLdb.connect(host="localhost",user="root",passwd="password",db="izi") 
-	print 'Test connection successfull !'                 	      
+	#print 'Test connection successfull !'                 	      
 except MySQLdb.Error as e:
 	print e
 	sys.exit()
@@ -92,4 +92,31 @@ while menu_choice !=6:
 	
 		showMainMenu()
 	
+	 
 	
+	elif menu_choice==4:   #Display the running inventory details
+		
+		try:
+			rows_affected=cur.execute("select * from running_inventory")
+			if rows_affected > 0:
+				for row in cur.fetchall():
+					print row[0], row[1], row[2], row[3]
+					print '============================='	
+			showMainMenu()
+		except MySQLdb.Error as e:
+			print e
+			logging.warn("select statement failed to execute.please check your query")
+			sys.exit()
+	elif menu_choice==5:   #Display the animal feed table details
+		
+		try:
+			rows_affected=cur.execute("select * from animal_feed")
+			if rows_affected > 0:
+				for row in cur.fetchall():
+					print row[0], row[1],row[2],row[3],row[4],row[5]
+					print '=========================================='	
+			showMainMenu()
+		except MySQLdb.Error as e:
+			print e
+			logging.warn("select statement failed to execute.please check your query")
+			sys.exit()		
