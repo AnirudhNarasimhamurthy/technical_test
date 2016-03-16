@@ -13,6 +13,9 @@ food_qty int,
 waste int default 0
 );
 
+/* I am initializing the waste to be initially zero and will update the 
+column when the workers take the feed from stock and update the actual values */
+
 alter table running_inventory
 add constraint pk_inventory primary key(food_id);
 
