@@ -41,8 +41,7 @@ def getInput():   #Function to get integer inputs
             print e
          else:
             return n
-
-	
+            	
 showMainMenu()	
 
 #Check database connectivity
@@ -58,16 +57,39 @@ except MySQLdb.Error as e:
 
 cur = db.cursor()
 
-
-#Processing based on the different options chosen from the main menu #
-
+'''Processing based on the different options chosen from the main menu
+Re-used some exception handling statements for MySQL from old code due to lack of time'''
 
 #Unless user wants to exit keep processing and keep displaying menu after every operation
 while menu_choice !=6:
 	
-	if menu_choice==1:
+	if menu_choice==1:   #Update the running inventory with the stock
 		showInventoryUpdateMenu()
+		while inventory_menu_choice !=5:
+			if inventory_menu_choice==1:
+				quantity=getInput()
+				fid=1
+			elif inventory_menu_choice==2:	
+				quantity=getInput()
+				fid=2
+			elif inventory_menu_choice==3:	
+				quantity=getInput()
+				fid=3	
+			elif inventory_menu_choice==4:	
+				quantity=getInput()
+				fid=4
+			try:
+				update_sql="""update running_inventory set food_qty=food_qty + %s where food_id=%s"""
+				rows_affected=cur.execute(update_sql,(quantity,fid))
+				if rows_affected > 0:
+					db.commit()	
+					print 'Updated the inventory successfully !'
+					showInventoryUpdateMenu()
+			except MySQLdb.Error as e:
+				print e	
+				logging.warn("Update failed !")
+				sys.exit()	
 	
-
-
+		showMainMenu()
+	
 	
