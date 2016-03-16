@@ -124,6 +124,44 @@ while menu_choice !=10:
 	
 		showMainMenu()
 	
+	elif menu_choice==2: #Insert values into animal_feed and update running inventory
+	
+		insert_sql = """insert into animal_feed (animal_id, animal_name,f_id,qty, feeding_time,feeding_date) values (%s,%s,%s,%s,%s,%s)"""
+		animalId=int(raw_input('Enter animal id:'))
+		animalName=raw_input('Enter animal name:')
+		fId=int(raw_input('fId: '))
+		qty=int(raw_input('qty:'))
+		feedTime= raw_input('Enter feed time (hh:mm:ss)') #21:30:45'
+		feedDate= raw_input('Enter feed date (yyyy-mm-dd)') #2016-03-15'
+
+		try:
+			rows_affected = cur.execute(insert_sql, (animalId,animalName,fId,qty,feedTime,feedDate))
+			#db.commit()
+			logging.warn("%d", rows_affected)
+			if rows_affected > 0:
+				print('Record inserted successfully !')
+			#If insert happens successfully correspondingly update the food quantity by subtracting it from running inventory
+			update_sql="""update running_inventory set food_qty= food_qty - %s where food_id= %s"""
+			new_qty=qty
+			food_id=fId
+			try:
+				rows_affected = cur.execute(update_sql,(new_qty,food_id))
+				if rows_affected > 0:
+					db.commit()	 #If both insert and update are true commit the changes
+					print 'Updated the inventory successfully !'
+				
+			except MySQLdb.Error as e:
+				print e	
+				db.rollback() #Rollback if insert succeeds and update fails
+				logging.warn("Update failed !")
+				sys.exit()
+				
+		except MySQLdb.IntegrityError as e:
+			print e
+			logging.warn("Failed to insert record !")
+		#choice=getInput()
+		showMainMenu()
+		
 		'''I am simplifying it here and assuming whatever the input given would be the value that will be updated. This is similar to the description in the problme where the worker manually enters the stock for syncing actual inventory and running inventory. I was thinking of doing this by taking value from actual inventory table but I don't have time'''
 	
 		'''Similar to the previous one except update here will be the actual input provided and not the input plus the previous value which was the case with 1'''
@@ -159,7 +197,8 @@ while menu_choice !=10:
 	elif menu_choice==4:   #Display the running inventory details
 		
 		try:
-			rows_affected=cur.execute("select * from running_inventory")
+			select_sql="select * from running_inventory"
+			rows_affected=cur.execute(select_sql)
 			if rows_affected > 0:
 				for row in cur.fetchall():
 					print row[0], row[1], row[2], row[3]
@@ -172,7 +211,8 @@ while menu_choice !=10:
 	elif menu_choice==5:   #Display the animal feed table details
 		
 		try:
-			rows_affected=cur.execute("select * from animal_feed")
+			select_sql="select * from animal_feed"
+			rows_affected=cur.execute(select_sql)
 			if rows_affected > 0:
 				for row in cur.fetchall():
 					print row[0], row[1],row[2],row[3],row[4],row[5]
