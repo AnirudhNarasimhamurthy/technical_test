@@ -1,1 +1,1 @@
-# technical_test
+# Submission for the technical test
