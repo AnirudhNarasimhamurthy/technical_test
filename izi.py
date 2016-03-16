@@ -10,9 +10,14 @@ def showMainMenu():
 	print '3. Adjust the running inventory'
 	print '4. Display running inventory'
 	print '5. Display animal feed table'
-	print '6. Exit'
+	print '6. How much each individual animal fed per day on average'
+	print '7. How many times per day are animals fed on average'
+	print '8. Wastage details'
+	print '9. Overfed and underfed detaisl'
+	print '10. Exit'
 	#print '\n Enter a choice'
-	menu_choice= int(raw_input('Enter a choice:'))
+	#menu_choice= int(raw_input('Enter a choice:'))
+	menu_choice=getMenuChoice(0)
 	
 
 def showInventoryUpdateMenu():
@@ -23,7 +28,8 @@ def showInventoryUpdateMenu():
 	print '3. Update the running inventory with lion food quantity'
 	print '4. Update the running inventory with tiger food quantity'
 	print '5. Exit'
-	inventory_menu_choice=int(raw_input('Enter a choice:'))
+	#inventory_menu_choice=int(raw_input('Enter a choice:'))
+	inventory_menu_choice=getMenuChoice(1)
 	
 
 
@@ -41,6 +47,32 @@ def getInput():   #Function to get integer inputs
             print e
          else:
             return n
+
+
+def getMenuChoice(flag):
+      while 1:
+         try:
+            s = raw_input('Enter your choice: ')
+         except KeyboardInterrupt:
+            sys.exit()
+         try:
+            n = int(s)
+            if flag==1:
+            	if n > 5 or n < 1:
+            		print 'Please enter a valid choice !'
+            		#break
+            	else:
+            		return n
+            elif flag==0:
+            	if n > 10 or n < 1:
+            		print 'Please enter a valid choice !'	
+            	else:
+            		return n		
+         except ValueError, e:
+            print e
+
+
+
             	
 showMainMenu()	
 
@@ -61,7 +93,7 @@ cur = db.cursor()
 Re-used some exception handling statements for MySQL from old code due to lack of time'''
 
 #Unless user wants to exit keep processing and keep displaying menu after every operation
-while menu_choice !=6:
+while menu_choice !=10:
 	
 	if menu_choice==1:   #Update the running inventory with the stock
 		showInventoryUpdateMenu()
@@ -92,7 +124,37 @@ while menu_choice !=6:
 	
 		showMainMenu()
 	
-	 
+		'''I am simplifying it here and assuming whatever the input given would be the value that will be updated. This is similar to the description in the problme where the worker manually enters the stock for syncing actual inventory and running inventory. I was thinking of doing this by taking value from actual inventory table but I don't have time'''
+	
+		'''Similar to the previous one except update here will be the actual input provided and not the input plus the previous value which was the case with 1'''
+	elif menu_choice==3:  
+		showInventoryUpdateMenu()
+		while inventory_menu_choice !=5:
+			if inventory_menu_choice==1:
+				quantity=getInput()
+				fid=1
+			elif inventory_menu_choice==2:	
+				quantity=getInput()
+				fid=2
+			elif inventory_menu_choice==3:	
+				quantity=getInput()
+				fid=3	
+			elif inventory_menu_choice==4:	
+				quantity=getInput()
+				fid=4
+			try:
+				update_sql="""update running_inventory set food_qty=%s where food_id=%s"""
+				rows_affected=cur.execute(update_sql,(quantity,fid))
+				if rows_affected > 0:
+					db.commit()	
+					print 'Updated the inventory successfully !'
+					
+			except MySQLdb.Error as e:
+				print e	
+				logging.warn("Update failed !")
+				sys.exit()	
+			showInventoryUpdateMenu()	
+	 	showMainMenu()
 	
 	elif menu_choice==4:   #Display the running inventory details
 		
